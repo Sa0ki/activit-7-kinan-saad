@@ -17,7 +17,7 @@ import java.util.List;
 public class ProductController {
     private IProductRepository productRepository;
     @GetMapping("/products")
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<Product> getProducts(){
         return productRepository.findAll();
     }

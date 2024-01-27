@@ -7,6 +7,7 @@ import groovyjarjarpicocli.CommandLine;
 import lombok.AllArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -30,10 +31,17 @@ import java.util.Map;
  * @author Eren
  **/
 @Controller
-@AllArgsConstructor
 public class CustomerController {
     private ICustomerRepository customerRepository;
     private ClientRegistrationRepository clientRegistrationRepository;
+
+    public CustomerController(ICustomerRepository customerRepository, ClientRegistrationRepository clientRegistrationRepository) {
+        this.customerRepository = customerRepository;
+        this.clientRegistrationRepository = clientRegistrationRepository;
+    }
+
+    @Value("${inventory.service.base.uri}")
+    private String inventoryServiceBaseUri;
     @GetMapping("/customers")
     @PreAuthorize("hasAuthority('ADMIN')")
     public String getCustomers(Model model){
@@ -72,7 +80,7 @@ public class CustomerController {
             OAuth2AuthenticationToken auth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
             DefaultOidcUser oidcUser = (DefaultOidcUser) auth2AuthenticationToken.getPrincipal();
             String jwtTokenValue = oidcUser.getIdToken().getTokenValue();
-            RestClient restClient = RestClient.create("http://localhost:8082");
+            RestClient restClient = RestClient.create(inventoryServiceBaseUri);
             List<Product> products = restClient.get()
                     .uri("/products")
                     .headers(h -> h.set(HttpHeaders.AUTHORIZATION, "Bearer " + jwtTokenValue))

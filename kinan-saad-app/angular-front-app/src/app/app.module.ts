@@ -17,7 +17,8 @@ function initializeKeycloak(keycloak: KeycloakService) {
         clientId: 'angular-client'
       },
       initOptions: {
-        onLoad: 'login-required',
+        onLoad: 'check-sso',
+        checkLoginIframe: true,
         silentCheckSsoRedirectUri:
           window.location.origin + '/assets/silent-check-sso.html'
       }

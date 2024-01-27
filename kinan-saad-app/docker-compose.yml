@@ -38,6 +38,8 @@ services:
         condition: service_healthy
     environment:
       - DB_URL=jdbc:mysql://mysql-db-inventory:3306/inventory-db
+      - JWT_JWK_SET_URI=http://keycloak:8080/realms/customer-app-realm/protocol/openid-connect/certs
+      - JWT_ISSUER_URI=http://keycloak:8080/realms/customer-app-realm
   postgres-service:
     image: postgres
     container_name: postgres-service
@@ -99,13 +101,14 @@ services:
       - KEYCLOAK_ISSUER_URI=http://keycloak:8080/realms/customer-app-realm
       - KEYCLOAK_AUTH_URI=http://localhost:8080/realms/customer-app-realm/protocol/openid-connect/auth
       - KEYCLOAK_TOKEN_URI=http://localhost:8080/realms/customer-app-realm/protocol/openid-connect/token
+      - INVENTORY_SERVICE_BASE_URI=http://inventory-service:8082
   angular-front:
     build: ./angular-front-app
     container_name: angular-front
     ports:
-      - '4200:80'
+      - '8083:80'
     expose:
-      - '4200'
+      - '8083'
     restart: always
 volumes:
   mysql_data:
